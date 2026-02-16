@@ -1,0 +1,56 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE specific directories
+.vscode-test/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries/
+.idea/vcs.xml
+.idea/jsLibraryMappings.json
+.idea/modules.xml
+.idea/misc.xml
+.idea/inspectionProfiles/
+.idea/libraries/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS specific files
+.DS_Store
+Thumbs.db
+.directory
+
+# Build artifacts
+*.o
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# Profiling and debugging
+perf-data
+perf.data
+perf.data.old
+.gdb_history
+.lldb_history

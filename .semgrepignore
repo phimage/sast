@@ -1,0 +1,1 @@
+# Override semgrep defaults - don't exclude test fixtures

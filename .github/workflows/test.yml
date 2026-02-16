@@ -1,0 +1,60 @@
+name: Test
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        rust: [stable]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
+      
+      - uses: Swatinem/rust-cache@v2
+      
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          command -v cppcheck >/dev/null 2>&1 || sudo apt-get install -y cppcheck
+          command -v clang++ >/dev/null 2>&1 || sudo apt-get install -y clang-tools
+          command -v python3 >/dev/null 2>&1 || sudo apt-get install -y python3 python3-pip
+          python3 -m semgrep --version >/dev/null 2>&1 || pip3 install semgrep
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          command -v cppcheck >/dev/null 2>&1 || brew install cppcheck
+          command -v clang++ >/dev/null 2>&1 || brew install llvm
+          command -v semgrep >/dev/null 2>&1 || brew install semgrep
+
+      - name: Install dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          if (-not (Get-Command cppcheck -ErrorAction SilentlyContinue)) { choco install -y cppcheck }
+          if (-not (Get-Command clang++ -ErrorAction SilentlyContinue)) { choco install -y llvm }
+          if (-not (Get-Command python -ErrorAction SilentlyContinue)) { choco install -y python }
+          # Try to add scan-build.bat to PATH if LLVM installed it
+          $scanBuild = Get-ChildItem "C:\Program Files\LLVM\bin\scan-build.bat" -ErrorAction SilentlyContinue
+          if ($scanBuild) { $env:PATH = "C:\Program Files\LLVM\bin;$env:PATH" }
+          python -m semgrep --version 2>$null; if ($LASTEXITCODE -ne 0) { pip install semgrep }
+        shell: pwsh
+      
+      - name: Run tests
+        run: cargo test --verbose
+      
+      - name: Run clippy
+        run: cargo clippy -- -D warnings
+      
+      - name: Check formatting
+        run: cargo fmt -- --check

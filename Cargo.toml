@@ -1,0 +1,17 @@
+[package]
+name = "sast"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "0.9"
+serde_json = "1"
+anyhow = "1"
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+dirs = "6"
+regex = "1"
+glob = "0.3"

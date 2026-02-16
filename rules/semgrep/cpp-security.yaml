@@ -1,0 +1,69 @@
+rules:
+  - id: cpp-unsafe-strcpy
+    patterns:
+      - pattern: strcpy($DST, $SRC)
+    message: >-
+      Use of strcpy without bounds checking may cause buffer overflow.
+      Use strncpy or strlcpy instead.
+    languages: [cpp, c]
+    severity: ERROR
+
+  - id: cpp-unsafe-gets
+    patterns:
+      - pattern: gets($BUF)
+    message: >-
+      Use of gets is dangerous and has been removed in C11.
+      Use fgets instead.
+    languages: [cpp, c]
+    severity: ERROR
+
+  - id: cpp-unsafe-sprintf
+    patterns:
+      - pattern: sprintf($BUF, ...)
+    message: >-
+      Use of sprintf without bounds checking may cause buffer overflow.
+      Use snprintf instead.
+    languages: [cpp, c]
+    severity: WARNING
+
+  - id: cpp-double-free
+    patterns:
+      - pattern: |
+          free($PTR);
+          ...
+          free($PTR);
+    message: >-
+      Memory pointed to by $PTR may be freed twice, causing undefined behavior.
+    languages: [cpp, c]
+    severity: ERROR
+
+  - id: cpp-use-after-free
+    patterns:
+      - pattern: |
+          free($PTR);
+          ...
+          *$PTR;
+    message: >-
+      Pointer $PTR is dereferenced after being freed.
+    languages: [cpp, c]
+    severity: ERROR
+
+  - id: cpp-null-pointer-deref
+    patterns:
+      - pattern: |
+          $FN(nullptr)
+    message: >-
+      Passing nullptr directly to function may cause null pointer dereference.
+    languages: [cpp, c]
+    severity: WARNING
+
+  - id: cpp-malloc-no-null-check
+    patterns:
+      - pattern: |
+          $PTR = ($TYPE)malloc(...);
+          *$PTR = $VAL;
+    message: >-
+      Return value of malloc is used without null check.
+      malloc may return NULL if allocation fails.
+    languages: [cpp, c]
+    severity: WARNING
